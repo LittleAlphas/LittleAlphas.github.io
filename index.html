@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Little Alphas Robotics</title>
+<meta name="description" content="LEGO SPIKE building instructions for Little Alphas Robotics students">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e2a44">
+<style>
+:root{
+  --navy:#1e2a44; --prime:#f7b500; --essential:#0096a0;
+  --bg:#f5f3ee; --card:#ffffff; --ink:#1e2a44; --muted:#647082;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button{font:inherit;border:0;cursor:pointer;background:none;color:inherit}
+
+/* ---------- login ---------- */
+#login{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;padding:24px;z-index:50}
+.card{background:#fff;border-radius:28px;padding:36px 32px 28px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.card img{width:96px;height:96px;border-radius:24px}
+.card h1{font-size:26px;margin:14px 0 2px}
+.card p{color:var(--muted);margin:0 0 20px;font-size:17px}
+.card input{width:100%;height:56px;border:1px solid #d2d2da;border-radius:14px;background:#f6f6f8;padding:0 18px;font-size:18px;margin-bottom:12px;color:var(--ink)}
+.card input:focus{outline:2px solid var(--essential)}
+#loginBtn{width:100%;height:60px;border-radius:16px;background:var(--prime);color:var(--navy);font-size:21px;font-weight:700;margin-top:4px}
+#loginErr{color:#c0392b;font-size:15px;min-height:20px;margin:8px 0 0}
+.card a{display:inline-block;margin-top:18px;color:var(--essential);font-size:16px}
+
+/* ---------- header ---------- */
+header{background:var(--navy);color:#fff;padding:calc(env(safe-area-inset-top) + 14px) 20px 0;position:sticky;top:0;z-index:10}
+.hrow{display:flex;align-items:center;gap:12px;max-width:1080px;margin:0 auto}
+.hrow img{width:44px;height:44px;border-radius:12px}
+.hrow .t1{font-size:19px;font-weight:700;line-height:1.15}
+.hrow .t2{font-size:13px;color:#c8d2e6}
+.hrow .right{margin-left:auto;display:flex;gap:14px;align-items:center}
+#offlineDot{font-size:12px;color:#c8d2e6;display:none}
+#logout{color:#c8d2e6;font-size:14px;padding:8px}
+nav{display:flex;max-width:1080px;margin:10px auto 0;gap:4px}
+nav button{flex:1;padding:12px 0 14px;color:#aeb9d0;font-size:17px;font-weight:700;border-bottom:4px solid transparent}
+nav button.on[data-sec="Prime"]{color:var(--prime);border-color:var(--prime)}
+nav button.on[data-sec="Essential"]{color:#49d2dc;border-color:var(--essential)}
+
+/* ---------- library ---------- */
+#library{max-width:1080px;margin:0 auto;padding:16px 16px calc(env(safe-area-inset-bottom) + 24px)}
+.secbar{display:flex;align-items:center;gap:10px;margin:6px 2px 12px;flex-wrap:wrap}
+.secbar .count{color:var(--muted);font-size:15px}
+#dlAll{margin-left:auto;background:var(--navy);color:#fff;border-radius:999px;padding:10px 18px;font-size:15px;font-weight:600}
+#dlAll:disabled{opacity:.55}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.item{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 2px 10px rgba(30,42,68,.08);text-align:left;display:flex;flex-direction:column;transition:transform .08s}
+.item:active{transform:scale(.97)}
+.item img{width:100%;aspect-ratio:360/255;object-fit:cover;background:#e8e8ee;display:block}
+.item .meta{padding:12px 14px 14px;display:flex;align-items:center;gap:8px}
+.item .name{font-weight:700;font-size:16px;flex:1;line-height:1.25}
+.item .sub{font-size:12.5px;color:var(--muted);font-weight:400;display:block;margin-top:3px}
+.badge{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+.badge.saved{background:#d9f2ea;color:#0c7a56}
+.badge.cloud{background:#eef0f5;color:#8b96ab}
+
+/* ---------- viewer ---------- */
+#viewer{position:fixed;inset:0;background:#2a2f3a;z-index:40;display:none;flex-direction:column}
+#viewer.open{display:flex}
+#vtop{background:var(--navy);color:#fff;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px}
+#vtop .vt{flex:1;font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vtop button{padding:10px 12px;font-size:22px;color:#fff}
+#stage{flex:1;overflow:hidden;position:relative;touch-action:none}
+#canvasWrap{position:absolute;left:0;top:0;transform-origin:0 0}
+#pg{display:block;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.45)}
+#vbar{background:var(--navy);display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 10px calc(env(safe-area-inset-bottom) + 8px)}
+#vbar button{color:#fff;font-size:26px;padding:8px 22px;border-radius:12px}
+#vbar button:active{background:rgba(255,255,255,.15)}
+#pageNum{color:#fff;font-size:17px;min-width:90px;text-align:center}
+#spin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;pointer-events:none;opacity:0;transition:opacity .2s}
+#spin.show{opacity:1}
+
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 26px);transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 22px;border-radius:999px;font-size:15px;box-shadow:0 8px 30px rgba(0,0,0,.3);opacity:0;transition:opacity .25s;z-index:60;pointer-events:none;max-width:90vw;text-align:center}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <form class="card" id="loginForm">
+    <img src="icons/icon-192.png" alt="">
+    <h1>Little Alphas Robotics</h1>
+    <p>Building Instructions</p>
+    <input id="u" placeholder="Login" autocapitalize="none" autocorrect="off" autocomplete="username">
+    <input id="p" placeholder="Password" type="password" autocomplete="current-password">
+    <div id="loginErr"></div>
+    <button id="loginBtn" type="submit">Log in</button><br>
+    <a href="https://littlealphas.com.au/" target="_blank" rel="noopener">littlealphas.com.au</a>
+  </form>
+</div>
+
+<header id="hdr" hidden>
+  <div class="hrow">
+    <img src="icons/icon-192.png" alt="">
+    <div><div class="t1">Little Alphas Robotics</div><div class="t2">Building Instructions</div></div>
+    <div class="right"><span id="offlineDot">● offline</span><button id="logout">Log out</button></div>
+  </div>
+  <nav>
+    <button data-sec="Prime" class="on">SPIKE Prime</button>
+    <button data-sec="Essential">SPIKE Essential</button>
+  </nav>
+</header>
+
+<main id="library" hidden>
+  <div class="secbar">
+    <span class="count" id="count"></span>
+    <button id="dlAll">⬇ Save all offline</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div id="viewer">
+  <div id="vtop">
+    <button id="vback" aria-label="Back">‹</button>
+    <div class="vt" id="vtitle"></div>
+    <button id="vfit" aria-label="Fit page">⤢</button>
+  </div>
+  <div id="stage">
+    <div id="canvasWrap"><canvas id="pg"></canvas></div>
+    <div id="spin">Loading…</div>
+  </div>
+  <div id="vbar">
+    <button id="prev">‹</button>
+    <div id="pageNum"></div>
+    <button id="next">›</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="catalog.js"></script>
+<script type="module">
+import * as pdfjsLib from './lib/pdf.min.mjs';
+pdfjsLib.GlobalWorkerOptions.workerSrc = './lib/pdf.worker.min.mjs';
+
+const USER = 'littlealphas';
+const PASS_SHA256 = '6bd0577d1b5ca9d334678fd06fe1756920348bf02c0830593ff7466104498c7c';
+const PDF_CACHE = 'la-pdfs-v1';
+const $ = s => document.querySelector(s);
+const toastEl = $('#toast');
+let toastT;
+function toast(m, ms=2600){ toastEl.textContent=m; toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove('show'), ms); }
+
+async function sha256(s){
+  const h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ---------- login ---------- */
+function lsGet(k){ try{ return localStorage.getItem(k);}catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v);}catch(e){} }
+function showApp(){
+  $('#login').style.display='none'; $('#hdr').hidden=false; $('#library').hidden=false;
+}
+$('#loginForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const u=$('#u').value.trim().toLowerCase(), p=$('#p').value.trim();
+  if(u===USER && await sha256(p)===PASS_SHA256){ lsSet('la-ok','1'); showApp(); }
+  else $('#loginErr').textContent='Login or password is not right. Ask your teacher.';
+});
+$('#logout').onclick=()=>{ lsSet('la-ok',''); location.reload(); };
+if(lsGet('la-ok')==='1') showApp();
+
+/* ---------- library ---------- */
+let sec='Prime';
+const grid=$('#grid');
+async function savedSet(){
+  try{
+    const c=await caches.open(PDF_CACHE);
+    const keys=await c.keys();
+    return new Set(keys.map(r=>decodeURIComponent(new URL(r.url).pathname.split('/pdfs/')[1]||'')));
+  }catch(e){ return new Set(); }
+}
+async function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on', b.dataset.sec===sec));
+  const items=CATALOG[sec], saved=await savedSet();
+  $('#count').textContent=`${items.length} instructions`;
+  grid.innerHTML='';
+  for(const it of items){
+    const key=`${sec}/${it.file}`;
+    const b=document.createElement('button');
+    b.className='item';
+    b.innerHTML=`<img loading="lazy" src="thumbs/${sec}/${encodeURIComponent(it.file)}.jpg" alt="">
+      <div class="meta"><div class="name">${it.name}<span class="sub">${it.pages} pages · ${it.mb} MB</span></div>
+      <div class="badge ${saved.has(key)?'saved':'cloud'}">${saved.has(key)?'✓':'↓'}</div></div>`;
+    b.onclick=()=>openPdf(sec, it);
+    grid.appendChild(b);
+  }
+  updateDlAll(saved);
+}
+function updateDlAll(saved){
+  const items=CATALOG[sec];
+  const missing=items.filter(it=>!saved.has(`${sec}/${it.file}`));
+  const btn=$('#dlAll');
+  if(!missing.length){ btn.textContent='✓ All saved offline'; btn.disabled=true; }
+  else{ btn.textContent=`⬇ Save all offline (${Math.round(missing.reduce((a,b)=>a+b.mb,0))} MB)`; btn.disabled=false; }
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{ sec=b.dataset.sec; render(); });
+
+$('#dlAll').onclick=async ()=>{
+  const items=CATALOG[sec]; const c=await caches.open(PDF_CACHE);
+  const saved=await savedSet();
+  const missing=items.filter(it=>!saved.has(`${sec}/${it.file}`));
+  let n=0; $('#dlAll').disabled=true;
+  for(const it of missing){
+    n++; $('#dlAll').textContent=`Saving ${n}/${missing.length}…`;
+    try{
+      const url=`pdfs/${sec}/${encodeURIComponent(it.file)}`;
+      const r=await fetch(url);
+      if(r.ok) await c.put(url, r);
+    }catch(e){ toast('Connection lost — tap again later to finish.'); break; }
+  }
+  await render();
+  toast('Saved. These instructions now open without Wi-Fi.');
+};
+
+/* online indicator */
+function net(){ $('#offlineDot').style.display=navigator.onLine?'none':'inline'; }
+addEventListener('online',net); addEventListener('offline',net); net();
+
+/* ---------- viewer ---------- */
+let pdf=null, pageNo=1, rendering=false, renderAgain=false;
+const stage=$('#stage'), wrap=$('#canvasWrap'), canvas=$('#pg'), ctx=canvas.getContext('2d');
+let view={x:0,y:0,s:1}, base={w:0,h:0};
+
+async function openPdf(s, it){
+  $('#viewer').classList.add('open'); $('#vtitle').textContent=it.name;
+  $('#spin').classList.add('show');
+  history.pushState({v:1},'');
+  const url=`pdfs/${s}/${encodeURIComponent(it.file)}`;
+  try{
+    const c=await caches.open(PDF_CACHE);
+    let resp=await c.match(url);
+    if(!resp){
+      resp=await fetch(url);
+      if(resp.ok) await c.put(url, resp.clone());
+    }
+    const data=await resp.arrayBuffer();
+    pdf=await pdfjsLib.getDocument({data}).promise;
+    pageNo=1;
+    await showPage();
+    render(); // refresh saved badges
+  }catch(e){
+    $('#spin').classList.remove('show');
+    toast(navigator.onLine?'Could not open this file.':'This one isn’t saved yet — connect to Wi-Fi first.');
+    closeViewer();
+  }
+}
+async function showPage(){
+  if(!pdf) return;
+  if(rendering){ renderAgain=true; return; }
+  rendering=true;
+  $('#spin').classList.add('show');
+  const page=await pdf.getPage(pageNo);
+  const avail={w:stage.clientWidth, h:stage.clientHeight};
+  const v1=page.getViewport({scale:1});
+  const fit=Math.min(avail.w/v1.width, avail.h/v1.height);
+  const dpr=Math.min(devicePixelRatio||1, 2.5);
+  const vp=page.getViewport({scale:fit*dpr});
+  canvas.width=vp.width; canvas.height=vp.height;
+  canvas.style.width=(vp.width/dpr)+'px'; canvas.style.height=(vp.height/dpr)+'px';
+  base={w:vp.width/dpr, h:vp.height/dpr};
+  await page.render({canvasContext:ctx, viewport:vp}).promise;
+  fitView();
+  $('#pageNum').textContent=`${pageNo} / ${pdf.numPages}`;
+  $('#spin').classList.remove('show');
+  rendering=false;
+  if(renderAgain){ renderAgain=false; showPage(); }
+}
+function clampView(){
+  const sw=stage.clientWidth, sh=stage.clientHeight, w=base.w*view.s, h=base.h*view.s;
+  view.x = w<=sw ? (sw-w)/2 : Math.min(0, Math.max(sw-w, view.x));
+  view.y = h<=sh ? (sh-h)/2 : Math.min(0, Math.max(sh-h, view.y));
+}
+function apply(){ clampView(); wrap.style.transform=`translate(${view.x}px,${view.y}px) scale(${view.s})`; }
+function fitView(){ view.s=1; view.x=0; view.y=0; apply(); }
+$('#vfit').onclick=fitView;
+function go(d){ if(!pdf) return; const n=pageNo+d; if(n<1||n>pdf.numPages) return; pageNo=n; fitView(); showPage(); }
+$('#prev').onclick=()=>go(-1); $('#next').onclick=()=>go(1);
+function closeViewer(){ $('#viewer').classList.remove('open'); pdf=null; }
+$('#vback').onclick=()=>history.back();
+addEventListener('popstate',()=>{ if($('#viewer').classList.contains('open')) closeViewer(); });
+addEventListener('keydown',e=>{ if(!$('#viewer').classList.contains('open'))return;
+  if(e.key==='ArrowRight')go(1); if(e.key==='ArrowLeft')go(-1); if(e.key==='Escape')history.back(); });
+addEventListener('resize',()=>{ if(pdf) showPage(); });
+
+/* touch: drag, pinch, swipe, double-tap */
+const pts=new Map(); let pinch0=null, tapT=0, swipe0=null;
+stage.addEventListener('pointerdown',e=>{
+  stage.setPointerCapture(e.pointerId);
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pts.size===1){
+    swipe0={x:e.clientX,y:e.clientY,t:Date.now(),vx:view.x,vy:view.y};
+    const now=Date.now();
+    if(now-tapT<300){ // double tap
+      if(view.s>1.05) fitView();
+      else{ const r=stage.getBoundingClientRect(), cx=e.clientX-r.left, cy=e.clientY-r.top;
+        const s=2.5; view.x=cx-(cx-view.x)*s/view.s; view.y=cy-(cy-view.y)*s/view.s; view.s=s; apply(); }
+      tapT=0;
+    } else tapT=now;
+  }
+  if(pts.size===2){
+    const [a,b]=[...pts.values()];
+    pinch0={d:Math.hypot(a.x-b.x,a.y-b.y), s:view.s, cx:(a.x+b.x)/2, cy:(a.y+b.y)/2, vx:view.x, vy:view.y};
+    swipe0=null;
+  }
+});
+stage.addEventListener('pointermove',e=>{
+  if(!pts.has(e.pointerId)) return;
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pts.size===2 && pinch0){
+    const [a,b]=[...pts.values()];
+    const d=Math.hypot(a.x-b.x,a.y-b.y);
+    const s=Math.max(1, Math.min(5, pinch0.s*d/pinch0.d));
+    const r=stage.getBoundingClientRect(), cx=pinch0.cx-r.left, cy=pinch0.cy-r.top;
+    view.x=cx-(cx-pinch0.vx)*s/pinch0.s; view.y=cy-(cy-pinch0.vy)*s/pinch0.s; view.s=s; apply();
+  } else if(pts.size===1 && swipe0 && view.s>1.01){
+    const p=[...pts.values()][0];
+    view.x=swipe0.vx+(p.x-swipe0.x); view.y=swipe0.vy+(p.y-swipe0.y); apply();
+  }
+});
+function endPt(e){
+  const p=pts.get(e.pointerId); pts.delete(e.pointerId);
+  if(pinch0 && pts.size<2) pinch0=null;
+  if(p && swipe0 && pts.size===0 && view.s<=1.01){
+    const dx=e.clientX-swipe0.x, dy=e.clientY-swipe0.y, dt=Date.now()-swipe0.t;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.3 && dt<600) go(dx<0?1:-1);
+  }
+  if(pts.size===0) swipe0=null;
+}
+stage.addEventListener('pointerup',endPt); stage.addEventListener('pointercancel',endPt);
+
+render();
+
+/* ---------- service worker ---------- */
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
